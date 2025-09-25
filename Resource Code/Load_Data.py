@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 import pandas as pd
 
-
 # Lớp để quản lý việc load dữ liệu
 class DataLoader:
     """Load THPT datasets from a project folder.
@@ -14,7 +13,7 @@ class DataLoader:
     Read-only properties (tự tính từ project_root):
         thpt2023_csv_path, thpt2024_csv_path, thpt2025_ct2006_xlsx_path, thpt2025_ct2018_xlsx_path
     """
-
+    
     __slots__ = (
         "_project_root",
         "_dataset_dir",
@@ -107,53 +106,4 @@ class DataLoader:
         )
 
         # trả về 4 DataFrame
-        # (có thể gán lại nếu cần
         return df_2023_ct2006, df_2024_ct2006, df_2025_ct2006, df_2025_ct2018
-
-
-# Lớp để xử lý dữ liệu (DataFrame)
-class DataProcessor:
-    # -------- Khởi tạo --------
-    def __init__(self, df_2023_ct2006, df_2024_ct2006, df_2025_ct2006, df_2025_ct2018):
-        self.df_2023_ct2006 = df_2023_ct2006
-        self.df_2024_ct2006 = df_2024_ct2006
-        self.df_2025_ct2006 = df_2025_ct2006
-        self.df_2025_ct2018 = df_2025_ct2018
-
-    # ------------ Getter, Setter -----------
-    # Getter
-    @property
-    def df_2023_ct2006(self):
-        return self._df_2023_ct2006
-
-    @property
-    def df_2024_ct2006(self):
-        return self._df_2024_ct2006
-
-    @property
-    def df_2025_ct2006(self):
-        return self._df_2025_ct2006
-
-    @property
-    def df_2025_ct2018(self):
-        return self._df_2025_ct2018
-
-    # Setter
-    @df_2023_ct2006.setter
-    def df_2023_ct2006(self, value):
-        self._df_2023_ct2006 = value
-
-    @df_2024_ct2006.setter
-    def df_2024_ct2006(self, value):
-        self._df_2024_ct2006 = value
-
-    @df_2025_ct2006.setter
-    def df_2025_ct2006(self, value):
-        self._df_2025_ct2006 = value
-
-    @df_2025_ct2018.setter
-    def df_2025_ct2018(self, value):
-        self._df_2025_ct2018 = value
-
-    # -------- Method: xử lý dữ liệu --------
-
