@@ -1,77 +1,92 @@
 # Khai báo thư viện
-import os
+from __future__ import annotations
+from pathlib import Path
 import pandas as pd
 
 # Lớp để quản lý việc load dữ liệu
 class DataLoader:
-    # Phương thức khởi tạo đường dẫn
-    def __init__(self):
-        # Thư mục chứa file .py hiện tại
-        self.HERE = os.path.dirname(__file__)
-        # Project root = thư mục cha của Resource Code
-        self.PROJECT_ROOT = os.path.dirname(self.HERE)
-        # Đường dẫn các file dữ liệu
-        self.THPT2023_CT2006_CSV_PATH = os.path.join(
-            self.PROJECT_ROOT,
-            "Dataset for Project",
-            "Data_Set_2023",
-            "diem_thi_thpt_2023.csv"
-        )
-        self.THPT2024_CT2006_CSV_PATH = os.path.join(
-            self.PROJECT_ROOT,
-            "Dataset for Project",
-            "Data_Set_2024",
-            "diem_thi_thpt_2024.csv"
-        )
-        self.THPT2025_CT2006_XLSX_PATH = os.path.join(
-            self.PROJECT_ROOT,
-            "Dataset for Project",
-            "Data_Set_2025",
-            "diem_thi_thpt_2025-ct2006.xlsx"
-        )
-        self.THPT2025_CT2018_XLSX_PATH = os.path.join(
-            self.PROJECT_ROOT,
-            "Dataset for Project",
-            "Data_Set_2025",
-            "diem_thi_thpt_2025-ct2018a.xlsx"
-        )
-    
-    # Phương thức load dữ liệu
+    """Load THPT datasets from a project folder.
+
+    Attributes (public API):
+        project_root (Path): Thư mục gốc của project. Có thể gán lại.
+
+    Read-only properties (tự tính từ project_root):
+        thpt2023_csv_path, thpt2024_csv_path, thpt2025_ct2006_xlsx_path, thpt2025_ct2018_xlsx_path
+    """
+    __slots__ = (
+        "_project_root",
+        "_dataset_dir",
+        "_set2023", "_set2024", "_set2025",
+        "_f_2023_ct2006", "_f_2024_ct2006", "_f_2025_ct2006", "_f_2025_ct2018",
+    )
+
+    # -------- Khởi tạo --------    
+    def __init__(self, project_root: Path | str | None = None):
+        # --- “constructor” (public) ---
+        here = Path(__file__).resolve().parent
+        default_root = here.parent
+        self._project_root: Path = Path(project_root) if project_root else default_root
+
+        # tên thư mục/file chuẩn hóa để dễ đổi nếu cần
+        self._dataset_dir = "Dataset for Project"
+        self._set2023 = "Data_Set_2023"
+        self._set2024 = "Data_Set_2024"
+        self._set2025 = "Data_Set_2025"
+
+        self._f_2023_ct2006 = "diem_thi_thpt_2023.csv"
+        self._f_2024_ct2006 = "diem_thi_thpt_2024.csv"
+        self._f_2025_ct2006 = "diem_thi_thpt_2025-ct2006.xlsx"
+        self._f_2025_ct2018 = "diem_thi_thpt_2025-ct2018a.xlsx"
+
+    # -------- Getter/Setter kiểu Python cho cấu hình --------
+    @property
+    def project_root(self) -> Path:
+        """Thư mục gốc của project (có thể gán lại)."""
+        return self._project_root
+
+    @project_root.setter
+    def project_root(self, value: Path | str) -> None:
+        p = Path(value).resolve()
+        if not p.exists():
+            raise FileNotFoundError(f"project_root không tồn tại: {p}")
+        self._project_root = p
+        # Không cần cập nhật đường dẫn lẻ vì chúng được tính động bên dưới.
+
+    # -------- Các đường dẫn: chỉ-đọc, tính động từ project_root --------
+    @property
+    def thpt2023_csv_path(self) -> Path:
+        return self.project_root / self._dataset_dir / self._set2023 / self._f_2023_ct2006
+
+    @property
+    def thpt2024_csv_path(self) -> Path:
+        return self.project_root / self._dataset_dir / self._set2024 / self._f_2024_ct2006
+
+    @property
+    def thpt2025_ct2006_xlsx_path(self) -> Path:
+        return self.project_root / self._dataset_dir / self._set2025 / self._f_2025_ct2006
+
+    @property
+    def thpt2025_ct2018_xlsx_path(self) -> Path:
+        return self.project_root / self._dataset_dir / self._set2025 / self._f_2025_ct2018
+
+    # -------- Hành vi: load dữ liệu --------
     def load_data(self):
-        df_THPT2023_CT2006 = pd.read_csv(self.THPT2023_CT2006_CSV_PATH, encoding='utf-8')
-        df_THPT2024_CT2006 = pd.read_csv(self.THPT2024_CT2006_CSV_PATH, encoding='utf-8')
-        df_THPT2025_CT2006 = pd.read_excel(self.THPT2025_CT2006_XLSX_PATH, engine="openpyxl")
-        df_THPT2025_CT2018 = pd.read_excel(self.THPT2025_CT2018_XLSX_PATH, engine="openpyxl")
-        return df_THPT2023_CT2006, df_THPT2024_CT2006, df_THPT2025_CT2006, df_THPT2025_CT2018
+        # kiểm tra tồn tại để báo lỗi sớm & rõ
+        for p in (
+            self.thpt2023_csv_path,
+            self.thpt2024_csv_path,
+            self.thpt2025_ct2006_xlsx_path,
+            self.thpt2025_ct2018_xlsx_path,
+        ):
+            if not p.exists():
+                raise FileNotFoundError(f"Không tìm thấy file: {p}")
 
-# Khởi tạo và load dữ liệu sử dụng OOP để xử lý
-class DataProcessor:
-    # Phương thức khởi tạo
-    def __init__(self):
-        self.data_loader = DataLoader()
-        
-        # Gọi phương thức khởi tạo đường dẫn
-        self.data_loader.__init__()
-        
-        # Load dữ liệu khi khởi tạo
-        (
-            self.df_THPT2023_CT2006,
-            self.df_THPT2024_CT2006,
-            self.df_THPT2025_CT2006,
-            self.df_THPT2025_CT2018
-        ) = self.data_loader.load_data()
-
-    # Phương thức tiền xử lý dữ liệu
-    def load_and_preprocess_data(self):
-        # Thực hiện các bước tiền xử lý dữ liệu tại đây nếu cần
-        
-        # Hiện tại chỉ trả về các DataFrame đã load
-        return (
-            self.df_THPT2023_CT2006,
-            self.df_THPT2024_CT2006,
-            self.df_THPT2025_CT2006,
-            self.df_THPT2025_CT2018
-        )
+        df_2023 = pd.read_csv(self.thpt2023_csv_path, encoding="utf-8")
+        df_2024 = pd.read_csv(self.thpt2024_csv_path, encoding="utf-8")
+        df_2025_ct2006 = pd.read_excel(self.thpt2025_ct2006_xlsx_path, engine="openpyxl")
+        df_2025_ct2018 = pd.read_excel(self.thpt2025_ct2018_xlsx_path, engine="openpyxl")
+        return df_2023, df_2024, df_2025_ct2006, df_2025_ct2018
     
+
     
 
