@@ -1,0 +1,2 @@
+df_THPT2025_CT2006_excel = pd.read_excel(THPT2025_CT2006_XLSX_PATH)
+# df_THPT2025_CT2018_excel = pd.read_excel(THPT2025_CT2006_XLSX_PATH)
