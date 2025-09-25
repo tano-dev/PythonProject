@@ -59,7 +59,7 @@ class DataLoader:
         self._project_root = p
         # Không cần cập nhật đường dẫn lẻ vì chúng được tính động bên dưới.
 
-    # -------- Các đường dẫn: chỉ-đọc, tính động từ project_root --------
+    # -------- Xây dựng đường dẫn đến file: chỉ-đọc, tính động từ project_root --------
     @property
     def thpt2023_ct2006_csv_path(self) -> Path:
         return (
@@ -84,7 +84,7 @@ class DataLoader:
             self.project_root / self._dataset_dir / self._set2025 / self._f_2025_ct2018
         )
 
-    # -------- Hành vi: load dữ liệu --------
+    # -------- Method: load dữ liệu --------
     def load_data(self):
         # kiểm tra tồn tại để báo lỗi sớm & rõ
         for p in (
@@ -96,10 +96,64 @@ class DataLoader:
             if not p.exists():
                 raise FileNotFoundError(f"Không tìm thấy file: {p}")
 
-        df_2023_ct2006 = pd.read_csv  (self.thpt2023_ct2006_csv_path,  encoding="utf-8"  )
-        df_2024_ct2006 = pd.read_csv  (self.thpt2024_ct2006_csv_path,  encoding="utf-8"  )
-        df_2025_ct2006 = pd.read_excel(self.thpt2025_ct2006_xlsx_path, engine="openpyxl" )
-        df_2025_ct2018 = pd.read_excel(self.thpt2025_ct2018_xlsx_path, engine="openpyxl" )
-        
-        # trả về 4 DataFrame (có thể gán lại nếu cần
+        # đọc dữ liệu vào DataFrames
+        df_2023_ct2006 = pd.read_csv(self.thpt2023_ct2006_csv_path, encoding="utf-8")
+        df_2024_ct2006 = pd.read_csv(self.thpt2024_ct2006_csv_path, encoding="utf-8")
+        df_2025_ct2006 = pd.read_excel(
+            self.thpt2025_ct2006_xlsx_path, engine="openpyxl"
+        )
+        df_2025_ct2018 = pd.read_excel(
+            self.thpt2025_ct2018_xlsx_path, engine="openpyxl"
+        )
+
+        # trả về 4 DataFrame
+        # (có thể gán lại nếu cần
         return df_2023_ct2006, df_2024_ct2006, df_2025_ct2006, df_2025_ct2018
+
+
+# Lớp để xử lý dữ liệu (DataFrame)
+class DataProcessor:
+    # -------- Khởi tạo --------
+    def __init__(self, df_2023_ct2006, df_2024_ct2006, df_2025_ct2006, df_2025_ct2018):
+        self.df_2023_ct2006 = df_2023_ct2006
+        self.df_2024_ct2006 = df_2024_ct2006
+        self.df_2025_ct2006 = df_2025_ct2006
+        self.df_2025_ct2018 = df_2025_ct2018
+
+    # ------------ Getter, Setter -----------
+    # Getter
+    @property
+    def df_2023_ct2006(self):
+        return self._df_2023_ct2006
+
+    @property
+    def df_2024_ct2006(self):
+        return self._df_2024_ct2006
+
+    @property
+    def df_2025_ct2006(self):
+        return self._df_2025_ct2006
+
+    @property
+    def df_2025_ct2018(self):
+        return self._df_2025_ct2018
+
+    # Setter
+    @df_2023_ct2006.setter
+    def df_2023_ct2006(self, value):
+        self._df_2023_ct2006 = value
+
+    @df_2024_ct2006.setter
+    def df_2024_ct2006(self, value):
+        self._df_2024_ct2006 = value
+
+    @df_2025_ct2006.setter
+    def df_2025_ct2006(self, value):
+        self._df_2025_ct2006 = value
+
+    @df_2025_ct2018.setter
+    def df_2025_ct2018(self, value):
+        self._df_2025_ct2018 = value
+
+    # -------- Method: xử lý dữ liệu --------
+
