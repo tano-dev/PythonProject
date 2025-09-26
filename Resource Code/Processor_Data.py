@@ -43,3 +43,11 @@ class DataProcessor:
         self.data_2024.dropna(inplace=True)
         self.data_2025_ct2006.dropna(inplace=True)
         self.data_2025_ct2018.dropna(inplace=True)
+    
+    # Nên xử lý dữ liệu như nào?    
+    # Cần những thông số gì?
+    # Cần những hàm gì?
+    # Cần những thuộc tính gì?
+    # Đổi quản lý sang thư viện NumPy như sao?
+    
+    
